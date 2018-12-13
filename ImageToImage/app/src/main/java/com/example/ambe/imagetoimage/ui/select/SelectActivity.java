@@ -6,8 +6,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,12 +25,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ambe.imagetoimage.BuildConfig;
 import com.example.ambe.imagetoimage.R;
 import com.example.ambe.imagetoimage.models.MyImage;
+import com.example.ambe.imagetoimage.ui.main.MainActivity;
 import com.example.ambe.imagetoimage.ui.translate.TranslateActivity;
 import com.example.ambe.imagetoimage.utils.Constans;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class SelectActivity extends AppCompatActivity implements ISelectView, View.OnClickListener {
     public static final String EXTRA_IMAGE_PATH = "EXTRA_IMAGE_PATH";
@@ -78,28 +87,23 @@ public class SelectActivity extends AppCompatActivity implements ISelectView, Vi
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_PIC_REQUEST && resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-
             MediaScannerConnection.scanFile(
                     getApplicationContext(),
-                    new String[]{Constans.getPath(this, uri)},
+                    new String[]{photoFile.getAbsolutePath()},
                     null,
                     new MediaScannerConnection.OnScanCompletedListener() {
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.v("AMBE1203",
-                                    "file " + path + " was scanned seccessfully: " + uri);
+                            startTranslate(uri);
+
                         }
                     });
 
-            if (uri != null) {
 
-                startTranslate(uri);
-
-            } else {
-                Toast.makeText(SelectActivity.this, "Cannot retrieve selected image", Toast.LENGTH_SHORT).show();
-            }
+        } else {
+            Toast.makeText(SelectActivity.this, "Cannot retrieve selected image", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private void startTranslate(Uri uri) {
@@ -108,28 +112,49 @@ public class SelectActivity extends AppCompatActivity implements ISelectView, Vi
         startActivity(intent);
     }
 
+    private File photoFile;
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_back_selected:
-                onBackPressed();
+                Intent intent = new Intent(SelectActivity.this, MainActivity.class);
+                startActivity(intent);
                 break;
             case R.id.img_camera:
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
+                Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (pictureIntent.resolveActivity(getPackageManager()) != null) {
+                    try {
+                        photoFile = createImageFile();
+                        if (photoFile != null) {
+                            imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", photoFile);
+                            pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                            startActivityForResult(pictureIntent, CAMERA_PIC_REQUEST);
+
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
                 break;
         }
 
     }
 
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_DCIM + "/Camera/");
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        return image;
+    }
+
     @Override
     public void onShowListImage(ArrayList<MyImage> arrayList) {
-
         adapter = new ImageSelectAdapter(getApplicationContext(), arrayList, this);
         rcvListImage.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
     }
 
     @Override

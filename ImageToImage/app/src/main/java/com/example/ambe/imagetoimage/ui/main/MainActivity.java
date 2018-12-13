@@ -219,6 +219,8 @@ public class MainActivity extends AppCompatActivity implements IMainView, View.O
     private void showDialogDeleteVideo(final ArrayList<String> arrPathDelete) {
 
         final Dialog dialog = new Dialog(this);
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
