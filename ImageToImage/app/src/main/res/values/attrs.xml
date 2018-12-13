@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HeaderView">
+        <attr name="header_title" format="string"/>
+        <attr name="header_icon_left" format="reference"/>
+        <attr name="header_icon_right" format="reference"/>
+        <attr name="header_title_color" format="reference"/>
+    </declare-styleable>
+    <declare-styleable name="StickerView">
+        <attr name="showIcons" format="boolean" />
+        <attr name="showBorder" format="boolean" />
+        <attr name="bringToFrontCurrentSticker" format="boolean" />
+        <attr name="borderColor" format="color"/>
+        <attr name="borderAlpha" format="integer"/>
+    </declare-styleable>
+    <declare-styleable name="GPSImageViewTransport">
+        <attr name="left" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="GPSImageView">
+        <attr name="clickAble" format="boolean"/>
+    </declare-styleable>
+</resources>

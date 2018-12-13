@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack"
+    tools:context=".ui.select.SelectActivity">
+
+    <RelativeLayout
+        android:id="@+id/tb_select_image"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="@color/colorBlack">
+
+        <com.example.ambe.imagetoimage.views.AnimClickView
+            android:id="@+id/img_back_selected"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:layout_gravity="center"
+            android:padding="@dimen/d15"
+            app:srcCompat="@drawable/ic_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/d15"
+            android:layout_marginLeft="@dimen/d15"
+            android:layout_toEndOf="@id/img_back_selected"
+            android:layout_toRightOf="@id/img_back_selected"
+            android:fontFamily="@font/my_font"
+            android:gravity="center"
+            android:text="@string/select"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp" />
+
+        <com.example.ambe.imagetoimage.views.AnimClickView
+            android:id="@+id/img_camera"
+            android:layout_width="?actionBarSize"
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:padding="@dimen/d15"
+            app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
+
+    </RelativeLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rcv_list_my_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tb_select_image" />
+
+
+</RelativeLayout>

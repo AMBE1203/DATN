@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".ui.main.MainActivity">
+
+
+    <RelativeLayout
+        android:id="@+id/csl_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/txt_image_to_image"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/my_font"
+            android:textColor="@color/colorPink"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textSize="@dimen/size_26sp"
+            android:textStyle="bold" />
+
+
+        <RelativeLayout
+            android:id="@+id/rll_translate"
+            android:layout_width="126dp"
+            android:layout_height="126dp"
+            android:layout_below="@id/txt_image_to_image"
+            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="55dp"
+            android:background="@drawable/bg_btn">
+
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerInParent="true"
+                app:srcCompat="@drawable/ic_translate" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/size_16dp"
+                android:fontFamily="@font/my_font"
+                android:gravity="center"
+                android:text="@string/translate"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/size_16sp" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/rll_collection"
+            android:layout_width="126dp"
+            android:layout_height="126dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/txt_image_to_image"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="55dp"
+            android:background="@drawable/bg_btn"
+            android:orientation="vertical">
+
+
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerInParent="true"
+                app:srcCompat="@drawable/ic_photo_library_black_24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/size_16dp"
+                android:fontFamily="@font/my_font"
+                android:gravity="center"
+                android:text="@string/collection"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/size_16sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/nativeMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rll_my_studio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBlack"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/tb_collection"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorBlack">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/d15"
+                android:layout_marginStart="@dimen/d15"
+                android:layout_toEndOf="@id/img_back_collection"
+                android:layout_toRightOf="@id/img_back_collection"
+                android:gravity="center"
+                android:text="@string/collection"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp" />
+
+            <com.example.ambe.imagetoimage.views.AnimClickView
+                android:id="@+id/img_back_collection"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:padding="@dimen/d15"
+                app:srcCompat="@drawable/ic_back" />
+
+            <com.example.ambe.imagetoimage.views.AnimClickView
+                android:id="@+id/img_share_photo_main"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="@dimen/size_78dp"
+                android:layout_marginRight="@dimen/size_78dp"
+                android:padding="@dimen/d15"
+                app:srcCompat="@drawable/ic_share" />
+
+            <com.example.ambe.imagetoimage.views.AnimClickView
+                android:id="@+id/img_delete_photo_main"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/size_16dp"
+                android:layout_marginRight="@dimen/size_16dp"
+                android:padding="@dimen/d15"
+                app:srcCompat="@drawable/ic_delete" />
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcv_my_colection"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tb_collection"
+            android:layout_marginTop="6dp" />
+
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
