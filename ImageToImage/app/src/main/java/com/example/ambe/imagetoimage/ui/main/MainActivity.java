@@ -162,7 +162,8 @@ public class MainActivity extends AppCompatActivity implements IMainView, View.O
         switch (v.getId()) {
             case R.id.rll_translate:
                 Intent intent = new Intent(MainActivity.this, SelectActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+         //       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 break;
             case R.id.rll_collection:

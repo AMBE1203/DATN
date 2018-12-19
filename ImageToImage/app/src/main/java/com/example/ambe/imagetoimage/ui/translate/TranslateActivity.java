@@ -32,6 +32,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class TranslateActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,7 +52,7 @@ public class TranslateActivity extends AppCompatActivity implements View.OnClick
     private static final String INPUT_NODE = "inputA";
     private static final String OUTPUT_NODE = "a2b_generator/output_image";
     private FileInputStream is = null;
-
+    private Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,37 +114,50 @@ public class TranslateActivity extends AppCompatActivity implements View.OnClick
         if (style.equals("")) {
             Toast.makeText(this, "Please select a style", Toast.LENGTH_SHORT).show();
         } else {
-            long currentTime = System.currentTimeMillis();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmm");
 
             initTensorFlowAndLoadModel(MODEL_FILE + style);
-            try {
-                File file = new File(pathImage);
-                is = new FileInputStream(file);
-                Bitmap bitmap = BitmapFactory.decodeStream(is);
-                Bitmap bitmap1 = stylizeImage(bitmap);
-                imgTranslate.setImageBitmap(bitmap1);
-                saveBitmap(bitmap1, (simpleDateFormat.format(currentTime) + " Image_to_Image " + ".png"));
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
         }
     }
 
     private void initTensorFlowAndLoadModel(String model) {
-        intValues = new int[480 * 480];
-        floatValues = new float[480 * 480 * 3];
-        inferenceInterface = new TensorFlowInferenceInterface(getAssets(), model);
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    intValues = new int[480 * 480];
+                    floatValues = new float[480 * 480 * 3];
+                    inferenceInterface = new TensorFlowInferenceInterface(getAssets(), model);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                long currentTime = System.currentTimeMillis();
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmm");
+                                File file = new File(pathImage);
+                                is = new FileInputStream(file);
+                                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                Bitmap bitmap1 = stylizeImage(bitmap);
+                                imgTranslate.setImageBitmap(bitmap1);
+                                saveBitmap(bitmap1, (simpleDateFormat.format(currentTime) + " Image_to_Image " + ".png"));
+
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+
+                            } finally {
+                                try {
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                } catch (final Exception e) {
+                    throw new RuntimeException("Error initializing TensorFlow!", e);
+                }
+            }
+        });
     }
 
     //  Image saving
