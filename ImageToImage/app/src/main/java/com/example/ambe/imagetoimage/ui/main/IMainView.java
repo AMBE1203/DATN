@@ -13,7 +13,7 @@ public interface IMainView {
 
     void onShowListMyImageFail(String mess);
 
-    void onSelectImage(String path);
+    void onSelectImage(int pos, ArrayList<MyImage> arrayList);
 
     void onDeleteImage(int pos, String path, boolean selected);
 }

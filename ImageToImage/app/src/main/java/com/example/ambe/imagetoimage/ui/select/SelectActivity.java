@@ -118,8 +118,10 @@ public class SelectActivity extends AppCompatActivity implements ISelectView, Vi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_back_selected:
-                Intent intent = new Intent(SelectActivity.this, MainActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(SelectActivity.this, MainActivity.class);
+//                startActivity(intent);
+//                finish();
+                onBackPressed();
                 break;
             case R.id.img_camera:
                 Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

@@ -35,7 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class TranslateActivity extends AppCompatActivity implements View.OnClickListener {
+public class TranslateActivity extends AppCompatActivity implements View.OnClickListener, ITranslateView {
 
     private ImageView imgTranslate;
     private ImageView imgBack;
@@ -45,14 +45,8 @@ public class TranslateActivity extends AppCompatActivity implements View.OnClick
     private RelativeLayout rllUkiyoe;
     private String pathImage;
     private String style = "";
-    private int[] intValues;
-    private float[] floatValues;
-    private TensorFlowInferenceInterface inferenceInterface;
     private String MODEL_FILE = "file:///android_asset/";
-    private static final String INPUT_NODE = "inputA";
-    private static final String OUTPUT_NODE = "a2b_generator/output_image";
-    private FileInputStream is = null;
-    private Executor executor = Executors.newSingleThreadExecutor();
+    private TranslatePres translatePres;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,162 +82,53 @@ public class TranslateActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_back_translate:
-                Intent intent = new Intent(TranslateActivity.this, SelectActivity.class);
-                startActivity(intent);
+                onBackPressed();
                 break;
             case R.id.rll_monet:
-                chooseStyle(rllMonet, rllVanghoh, rllUkiyoe);
-                style = "monet2photo.pb";
+                chooseStyle(rllMonet, rllVanghoh, rllUkiyoe, "monet2photo.pb");
                 break;
             case R.id.rll_vanghoh:
-                chooseStyle(rllVanghoh, rllMonet, rllUkiyoe);
-                style = "vangoh2photo.pb";
+                chooseStyle(rllVanghoh, rllMonet, rllUkiyoe, "vangoh2photo.pb");
                 break;
             case R.id.rll_ukiyoe:
-                chooseStyle(rllUkiyoe, rllVanghoh, rllMonet);
-                style = "ukiyoe2photo.pb";
+                chooseStyle(rllUkiyoe, rllVanghoh, rllMonet, "ukiyoe2photo.pb");
                 break;
             case R.id.btn_save:
-                translate();
+
+                traslate();
+
+
                 break;
         }
 
     }
 
-    private void translate() {
+    private void traslate() {
         if (style.equals("")) {
             Toast.makeText(this, "Please select a style", Toast.LENGTH_SHORT).show();
         } else {
-
-            initTensorFlowAndLoadModel(MODEL_FILE + style);
+            translatePres = new TranslatePres(this, TranslateActivity.this);
+            translatePres.translate(MODEL_FILE + style, pathImage);
         }
     }
 
-    private void initTensorFlowAndLoadModel(String model) {
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    intValues = new int[480 * 480];
-                    floatValues = new float[480 * 480 * 3];
-                    inferenceInterface = new TensorFlowInferenceInterface(getAssets(), model);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                long currentTime = System.currentTimeMillis();
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmm");
-                                File file = new File(pathImage);
-                                is = new FileInputStream(file);
-                                Bitmap bitmap = BitmapFactory.decodeStream(is);
-                                Bitmap bitmap1 = stylizeImage(bitmap);
-                                imgTranslate.setImageBitmap(bitmap1);
-                                saveBitmap(bitmap1, (simpleDateFormat.format(currentTime) + " Image_to_Image " + ".png"));
-
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-
-                            } finally {
-                                try {
-                                    is.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                } catch (final Exception e) {
-                    throw new RuntimeException("Error initializing TensorFlow!", e);
-                }
-            }
-        });
-    }
-
-    //  Image saving
-    public void saveBitmap(final Bitmap bitmap, final String filename) {
-//        String unique = Long.toString(System.currentTimeMillis());
-        final String root =
-                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "tensorflow";
-        final File myDir = new File(root);
-//        final String myDir = root;
-        final File file = new File(myDir, filename);
-        MediaScannerConnection.scanFile(
-                getApplicationContext(),
-                new String[]{file.getAbsolutePath()},
-                null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-
-                    }
-                });
-
-
-        try {
-            final FileOutputStream out = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-        } catch (final Exception ignored) {
-        }
-    }
-
-    private Bitmap scaleBitmap(Bitmap origin, int newWidth, int newHeight) {
-        if (origin == null) {
-            return null;
-        }
-
-        int height = origin.getHeight();
-        int width = origin.getWidth();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        Bitmap newBM = Bitmap.createBitmap(origin, 0, 0, width, height, matrix, false);
-        if (!origin.isRecycled()) {
-            origin.recycle();
-        }
-        return newBM;
-    }
-
-    private Bitmap stylizeImage(Bitmap bitmap) {
-        Bitmap scaledBitmap = scaleBitmap(bitmap, 480, 480); // desiredSize
-        scaledBitmap.getPixels(intValues, 0, scaledBitmap.getWidth(), 0, 0,
-                scaledBitmap.getWidth(), scaledBitmap.getHeight());
-        for (int i = 0; i < intValues.length; ++i) {
-            final int val = intValues[i];
-            floatValues[i * 3] = ((val >> 16) & 0xFF) / (127.5f) - 1f; //red
-
-            floatValues[i * 3 + 1] = ((val >> 8) & 0xFF) / (127.5f) - 1f; //green
-
-            floatValues[i * 3 + 2] = (val & 0xFF) / (127.5f) - 1f; //blue
-        }
-
-        // Copy the input data into TensorFlow.
-        inferenceInterface.feed(INPUT_NODE, floatValues, 1, 480, 480, 3);
-        // Run the inference call.
-        inferenceInterface.run(new String[]{OUTPUT_NODE});
-        // Copy the output Tensor back into the output array.
-        inferenceInterface.fetch(OUTPUT_NODE, floatValues);
-
-        for (int i = 0; i < intValues.length; ++i) {
-            intValues[i] =
-                    0xFF000000
-                            | (((int) ((floatValues[i * 3] + 1f) * 127.5f)) << 16) //red
-                            | (((int) ((floatValues[i * 3 + 1] + 1f) * 127.5f)) << 8) //green
-                            | ((int) ((floatValues[i * 3 + 2] + 1f) * 127.5f)); //blue
-        }
-        scaledBitmap.setPixels(intValues, 0, scaledBitmap.getWidth(), 0, 0,
-                scaledBitmap.getWidth(), scaledBitmap.getHeight());
-        return scaledBitmap;
-    }
-
-    private void chooseStyle(RelativeLayout rl1, RelativeLayout rl2, RelativeLayout rl3) {
+    private void chooseStyle(RelativeLayout rl1, RelativeLayout rl2, RelativeLayout rl3, String str) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             rl1.setBackground(getApplication().getResources().getDrawable(R.drawable.bg_boder));
             rl2.setBackground(null);
             rl3.setBackground(null);
+            style = str;
         }
+    }
+
+    @Override
+    public void onTranslate(Bitmap bitmap) {
+        imgTranslate.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void onTranslateFail(String mess) {
+        Toast.makeText(this, mess, Toast.LENGTH_SHORT).show();
+
     }
 }

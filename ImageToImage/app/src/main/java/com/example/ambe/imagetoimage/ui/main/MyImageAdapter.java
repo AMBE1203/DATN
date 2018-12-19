@@ -44,9 +44,9 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyHolder
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder myHolder, int i) {
-        MyImage myVideo = arrayList.get(i);
+        MyImage myImage = arrayList.get(i);
 
-        Glide.with(context).load("file://" + myVideo.getPath()).centerCrop().into(myHolder.imgView);
+        Glide.with(context).load("file://" + myImage.getPath()).centerCrop().into(myHolder.imgView);
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.custom_anim);
         myHolder.imgView.startAnimation(animation);
 
@@ -70,7 +70,7 @@ public class MyImageAdapter extends RecyclerView.Adapter<MyImageAdapter.MyHolder
                 @Override
                 public void onClick(View v) {
 
-                    iMainView.onSelectImage(arrayList.get(getAdapterPosition()).getPath());
+                    iMainView.onSelectImage(getAdapterPosition(), arrayList);
 
                 }
             });

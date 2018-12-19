@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.example.ambe.imagetoimage.R;
 import com.example.ambe.imagetoimage.models.MyImage;
+import com.example.ambe.imagetoimage.ui.preview.PreviewActivity;
 import com.example.ambe.imagetoimage.ui.select.SelectActivity;
 import com.example.ambe.imagetoimage.utils.Constans;
 
@@ -57,6 +58,19 @@ public class MainActivity extends AppCompatActivity implements IMainView, View.O
     private TextView txtImageToImage;
     private ArrayList<MyImage> arrMyImage;
     private int checkPermission = 0;
+    private int back = 1;
+
+    @Override
+    public void onBackPressed() {
+        if (back == 1) {
+            rllMyStudio.setVisibility(View.GONE);
+            rllCsMain.setVisibility(View.VISIBLE);
+            back = 0;
+
+        } else {
+            finish();
+        }
+    }
 
 
     @Override
@@ -162,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements IMainView, View.O
         switch (v.getId()) {
             case R.id.rll_translate:
                 Intent intent = new Intent(MainActivity.this, SelectActivity.class);
-         //       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                //       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 break;
@@ -175,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements IMainView, View.O
                 arrPathDelete.clear();
                 rllCsMain.setVisibility(View.VISIBLE);
                 rllMyStudio.setVisibility(View.GONE);
+                back = 0;
                 break;
             case R.id.img_delete_photo_main:
                 if (arrPathDelete.size() > 0) {
@@ -275,7 +290,12 @@ public class MainActivity extends AppCompatActivity implements IMainView, View.O
     }
 
     @Override
-    public void onSelectImage(String path) {
+    public void onSelectImage(int pos, ArrayList<MyImage> arrayList) {
+
+        Intent intent = new Intent(MainActivity.this, PreviewActivity.class);
+        intent.putExtra("PATH", pos);
+        intent.putParcelableArrayListExtra("LIST", arrayList);
+        startActivity(intent);
 
     }
 
