@@ -36,7 +36,7 @@ public class TranslatePres implements ITranslatePres {
 
     @Override
     public void onTranslateSuccess(Bitmap bitmap) {
-        iTranslateView.onTranslate(bitmap);
+        iTranslateView.onTranslateSuccess(bitmap);
 
     }
 

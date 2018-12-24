@@ -2,20 +2,13 @@ package com.example.ambe.imagetoimage.ui.translate;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -23,19 +16,9 @@ import com.bumptech.glide.Glide;
 import com.example.ambe.imagetoimage.R;
 import com.example.ambe.imagetoimage.ui.select.SelectActivity;
 
-import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 public class TranslateActivity extends AppCompatActivity implements View.OnClickListener, ITranslateView {
+
+    private final String TAG = TranslateActivity.class.getSimpleName();
 
     private ImageView imgTranslate;
     private ImageView imgBack;
@@ -78,6 +61,16 @@ public class TranslateActivity extends AppCompatActivity implements View.OnClick
 
     }
 
+    private void chooseStyle(RelativeLayout rl1, RelativeLayout rl2, RelativeLayout rl3, String str) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            rl1.setBackground(getApplication().getResources().getDrawable(R.drawable.bg_boder));
+            rl2.setBackground(null);
+            rl3.setBackground(null);
+            style = str;
+        }
+    }
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -94,41 +87,30 @@ public class TranslateActivity extends AppCompatActivity implements View.OnClick
                 chooseStyle(rllUkiyoe, rllVanghoh, rllMonet, "ukiyoe2photo.pb");
                 break;
             case R.id.btn_save:
-
-                traslate();
-
-
+                translate();
                 break;
         }
 
     }
 
-    private void traslate() {
+    private void translate() {
         if (style.equals("")) {
             Toast.makeText(this, "Please select a style", Toast.LENGTH_SHORT).show();
         } else {
             translatePres = new TranslatePres(this, TranslateActivity.this);
             translatePres.translate(MODEL_FILE + style, pathImage);
+            Log.e(TAG, "Success");
         }
     }
 
-    private void chooseStyle(RelativeLayout rl1, RelativeLayout rl2, RelativeLayout rl3, String str) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            rl1.setBackground(getApplication().getResources().getDrawable(R.drawable.bg_boder));
-            rl2.setBackground(null);
-            rl3.setBackground(null);
-            style = str;
-        }
-    }
 
     @Override
-    public void onTranslate(Bitmap bitmap) {
+    public void onTranslateSuccess(Bitmap bitmap) {
         imgTranslate.setImageBitmap(bitmap);
     }
 
     @Override
     public void onTranslateFail(String mess) {
         Toast.makeText(this, mess, Toast.LENGTH_SHORT).show();
-
     }
 }
