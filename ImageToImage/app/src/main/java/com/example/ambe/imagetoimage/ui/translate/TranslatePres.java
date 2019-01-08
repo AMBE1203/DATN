@@ -59,7 +59,7 @@ public class TranslatePres implements ITranslatePres {
 
         public MyAsyntask() {
             progressBar = new ProgressDialog(context);
-            progressBar.setMessage("Loading ...");
+            progressBar.setMessage("Processing ...");
             progressBar.setCancelable(false);
         }
 

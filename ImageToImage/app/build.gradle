@@ -39,5 +39,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation files('libs/libandroid_tensorflow_inference_java.jar')
 
+    implementation'com.github.chrisbanes:PhotoView:2.1.4'
+
+
 
 }
